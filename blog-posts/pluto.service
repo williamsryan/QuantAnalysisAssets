@@ -1,1 +1,14 @@
+[Unit]
+Description=Julia Pluto Notebook Server
+After=network.target
 
+[Service]
+Type=simple
+User=ryan
+WorkingDirectory=/home/ryan
+ExecStart=/usr/local/bin/julia /home/ryan/git/QuantAnalysisAssets/blog-posts/pluto_server.jl
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
