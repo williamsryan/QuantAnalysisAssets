@@ -4,7 +4,7 @@ using HTTP
 using Sockets
 
 # Configuration
-const PORT = 8080
+const PORT = 1337
 const HOST = "127.0.0.1"  # Bind to localhost for VPN access
 
 # Optional: Authentication Function
