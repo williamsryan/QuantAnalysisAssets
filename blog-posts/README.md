@@ -120,19 +120,6 @@ stock_paths = monte_carlo_stock_simulation(
 plot_stock_simulations(stock_paths)
 ```
 
-## Key Advantages for Your Background
-
-### Leveraging CS PhD Skills
-- **Type System**: Robust compile-time checks
-- **Performance**: Near-C speed with high-level syntax
-- **Metaprogramming**: Advanced code generation capabilities
-
-### Quantitative Finance Specifics
-- Native support for:
-  * Probabilistic modeling
-  * High-performance simulations
-  * Complex mathematical computations
-
 ## Migration Strategies
 
 ### Python Interoperability
