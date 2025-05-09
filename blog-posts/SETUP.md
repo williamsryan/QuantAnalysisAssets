@@ -4,14 +4,8 @@
 
 ### 1. Install Julia on Remote Server
 ```bash
-# Download latest Julia version
-wget https://julialang.org/downloads/julia-latest-linux64.tar.gz
-
-# Extract to /opt directory
-sudo tar -xvzf julia-latest-linux64.tar.gz -C /opt
-
-# Create symbolic link
-sudo ln -s /opt/julia-[VERSION]/bin/julia /usr/local/bin/julia
+# Download juliaup
+curl -fsSL https://install.julialang.org | sh
 
 # Verify installation
 julia --version
