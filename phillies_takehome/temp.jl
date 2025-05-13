@@ -13,24 +13,25 @@ using MLJDecisionTreeInterface
 Random.seed!(42)
 
 df = CSV.read("k.csv", DataFrame)
-first(df, 5)
-describe(df)
+first(df, 5) |> println
+describe(df) |> println
 
+# Rename columns for clarity
 rename!(df, Symbol("K%") => :K)
 
 # Sort the DataFrame to ensure proper ordering within each player group
 sort!(df, [:MLBAMID, :Season])
 
 # Initialize new columns with missing values
-df[!, :K_prev] = Vector{Union{Missing,Float64}}(missing, nrow(df))
-df[!, :TBF_prev] = Vector{Union{Missing,Int64}}(missing, nrow(df))
+df[!, :K_prev] = Vector{Union{Missing, Float64}}(missing, nrow(df))
+df[!, :TBF_prev] = Vector{Union{Missing, Int64}}(missing, nrow(df))
 
 # Fill previous season's K% and TBF for each pitcher
 for g in groupby(df, :MLBAMID)
     global_indices = findall(x -> x in g.MLBAMID, df.MLBAMID)
     for i in 2:nrow(g)
         curr_idx = global_indices[i]
-        prev_idx = global_indices[i-1]
+        prev_idx = global_indices[i - 1]
 
         df[!, :K_prev][curr_idx] = df[!, :K][prev_idx]
         df[!, :TBF_prev][curr_idx] = df[!, :TBF][prev_idx]
@@ -50,26 +51,33 @@ player_lookup = Dict(pid => i for (i, pid) in enumerate(unique_players))
 player_index = [player_lookup[pid] for pid in df_model.MLBAMID]
 
 # Select feature matrix and target vector
-X = select(df_model, [:K_prev, :TBF_prev, :Age, :ΔK, :is_relief])
+X = DataFrames.select(df_model, [:K_prev, :TBF_prev, :Age, :ΔK, :is_relief])
 y = df_model.K
+y_vec = y
+
+# Train Ridge model
+RidgeRegressor = @load RidgeRegressor pkg=MLJLinearModels
+
+ridge_model = RidgeRegressor(lambda=0.1)
+ridge_mach = machine(ridge_model, X_train, y_train)
+fit!(ridge_mach)
+y_pred_ridge = predict(ridge_mach, X_test) |> MLJ.unwrap
 
 # Fit Random Forest Regressor with MLJ
-model = @load RandomForestRegressor pkg=DecisionTree
-mach = machine(model(n_trees=100), X, y)
-MLJ.fit!(mach)
+RandomForest = @load RandomForestRegressor pkg=DecisionTree
+
+model_instance = RandomForest(n_trees=100)
+mach = machine(model_instance, X, y)
+MLJBase.fit!(mach)
 
 # Make predictions
 y_pred = MLJ.predict(mach, X) |> MLJ.unwrap
 
-# Evaluate performance
-r2 = 1 - sum((y .- y_pred) .^ 2) / sum((y .- mean(y)) .^ 2)
-rmse = sqrt(mean((y .- y_pred) .^ 2))
+r2 = rsq(y_pred, y_vec)
+rmse = sqrt(mean((y_pred .- y_vec).^2))
 
 println("R² Score: ", round(r2, digits=4))
 println("RMSE: ", round(rmse, digits=4))
-
-# Store predictions in DataFrame
-df_model.K_pred = y_pred
 
 # -----------------------------------------------
 # Predict K% for 2024 season (out-of-sample test)
