@@ -24,8 +24,8 @@ function start_pluto_server()
     options = Pluto.Configuration(
         host = HOST,
         port = PORT,
-        require_auth = true,
-        auth_provider = check_credentials,
+        # require_auth = true,
+        # auth_provider = check_credentials,
         launch_browser = false,
         notebook_path = expanduser("~/pluto_notebooks")
     )
