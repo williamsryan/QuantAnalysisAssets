@@ -1,0 +1,12 @@
+site_name: QuantAnalysisAssets
+site_url: https://williamsryan.github.io/QuantAnalysisAssets
+nav:
+  - Home: index.md
+  - Notebooks: notebooks.md
+  - Guides:
+      - Forecasting Models: guides/forecasting.md
+      - Monte Carlo: guides/monte_carlo.md
+  - Projects: projects.md
+  - About: about.md
+theme:
+  name: material
